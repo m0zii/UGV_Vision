@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <ExecutablePath>C:\Users\MadMinute\Desktop\Testing OpenCV\opencv(directory)\opencv\build\x64\vc10\bin;C:\Users\MadMinute\Desktop\SQL extract\SQLAPI\vs2010\bin;C:\Users\MadMinute\Desktop\libxl-win-3.6.1\bin;$(ExecutablePath)</ExecutablePath>
+    <LibraryPath>C:\Users\MadMinute\Desktop\Testing OpenCV\opencv(directory)\opencv\build\x86\vc10\lib;C:\Users\MadMinute\Desktop\SQL extract\SQLAPI\vs2010\lib;C:\Users\MadMinute\Desktop\libxl-win-3.6.1\lib;$(LibraryPath)</LibraryPath>
+    <_PropertySheetDisplayName>PropertySheet_release</_PropertySheetDisplayName>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\MadMinute\Desktop\Testing OpenCV\opencv(directory)\opencv\build\include;C:\Program Files (x86)\Point Grey Research\FlyCapture2\include;C:\Users\MadMinute\Desktop\SQL extract\SQLAPI\include;C:\Users\MadMinute\Desktop\libxl-win-3.6.1\include_cpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>C:\Users\MadMinute\Desktop\Testing OpenCV\opencv(directory)\opencv\build\x86\vc10\lib;C:\Program Files (x86)\Point Grey Research\FlyCapture2\lib;C:\Users\MadMinute\Desktop\SQL extract\SQLAPI\vs2010\lib;C:\Users\MadMinute\Desktop\libxl-win-3.6.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_calib3d2410.lib;opencv_contrib2410.lib;opencv_core2410.lib;opencv_features2d2410.lib;opencv_flann2410.lib;opencv_gpu2410.lib;opencv_highgui2410.lib;opencv_imgproc2410.lib;opencv_legacy2410.lib;opencv_ml2410.lib;opencv_nonfree2410.lib;opencv_objdetect2410.lib;opencv_ocl2410.lib;opencv_photo2410.lib;opencv_stitching2410.lib;opencv_superres2410.lib;opencv_ts2410.lib;opencv_video2410.lib;opencv_videostab2410.lib;sqlapi.lib;sqlapis.lib;libxl.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup />
+</Project>
