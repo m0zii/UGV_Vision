@@ -16,8 +16,6 @@ int main(){
 			/*******Testing********/
 			struct sockaddr_in si_other;
 			int s, slen = sizeof(si_other);
-			char buf[BUFLEN];
-			char message[BUFLEN];
 			WSADATA wsa;
 
 			//Initialise winsock
@@ -43,7 +41,7 @@ int main(){
 			VideoCapture capture;
 			capture.open(0);
 			while (loop){
-				double angle, distance;
+				double angle=-1, distance=-1;
 				capture.read(frame);
 				int quit=detect_object(frame, &distance, &angle);
 				if (quit == 1)
@@ -167,7 +165,7 @@ int RunCamera(PGRGuid guid)
 	int user_input=0;
 	Image rawImage;
 	bool loop = true;
-	double distance, angle;
+	double distance=-1, angle=-1;
 	// Connect to a camera
 	error = cam.Connect(&guid);
 	if (error != PGRERROR_OK)

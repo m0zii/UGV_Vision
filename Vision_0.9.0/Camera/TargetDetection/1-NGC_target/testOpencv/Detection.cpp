@@ -45,38 +45,42 @@ int detect_object(Mat scene, double *distance_f, double *angle_f){
 	//detect circles
 	vector<Vec3f> circles;
 	HoughCircles(img_thresholded, circles, CV_HOUGH_GRADIENT,3, img_thresholded.rows / 2, 200, 100, 0, img_thresholded.rows);
-	if (circles.size() < 1)
-		return -1;
-	//draw circles
-	for (size_t i = 0; i < 1; i++)//circles.size(); i++)
-	{
-		Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
-		cout << "x=" << cvRound(circles[i][0]) << "y=" << cvRound(circles[i][1]) << "r="<<cvRound(circles[i][2])<<endl;
-		int radius = cvRound(circles[i][2]);
-		// circle center
-		circle(scene, center, 3, Scalar(0, 255, 0), -1, 8, 0);
-		// circle outline
-		circle(scene, center, radius, Scalar(0, 0, 255), 3, 8, 0);
+	if (circles.size() < 1){
+		//draw circles
+		for (size_t i = 0; i < 1; i++)//circles.size(); i++)
+		{
+			Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
+			cout << "x=" << cvRound(circles[i][0]) << "y=" << cvRound(circles[i][1]) << "r=" << cvRound(circles[i][2]) << endl;
+			int radius = cvRound(circles[i][2]);
+			// circle center
+			circle(scene, center, 3, Scalar(0, 255, 0), -1, 8, 0);
+			// circle outline
+			circle(scene, center, radius, Scalar(0, 0, 255), 3, 8, 0);
 
-		//calc distance of circle from UGV
-		//this should probably not go here
-		double distance = (21.0 * 220.0)/circles[i][2];
-		double midpoint = scene.cols / 2.0;
-		double opposite = circles[i][0] - midpoint;
-		double pixel_length = (2 * distance*tan(camera_angle / 2)) / scene.cols;
-		double angle = atan2(distance, (opposite* pixel_length)) * 180 / 3.15;
-		cout << "Distance= " << distance << " Feet" << endl;
-		*distance_f = distance*.3048;
-		cout << "Angle= " << angle << "degrees" << endl;
-		if ((angle - 90) > 0){
-			angle -= 90;
+			//calc distance of circle from UGV
+			//this should probably not go here
+			double distance = (21.0 * 220.0) / circles[i][2];
+			double midpoint = scene.cols / 2.0;
+			double opposite = circles[i][0] - midpoint;
+			double pixel_length = (2 * distance*tan(camera_angle / 2)) / scene.cols;
+			double angle = atan2(distance, (opposite* pixel_length)) * 180 / 3.15;
+			cout << "Distance= " << distance << " Feet" << endl;
+			*distance_f = distance*.3048;
+			cout << "Angle= " << angle << "degrees" << endl;
+			if ((angle - 90) > 0){
+				angle -= 90;
+			}
+			else{
+				angle = (angle - 90) + 360;
+			}
+			*angle_f = angle*.0174533;
+			if (i > 2)
+				break;
 		}
-		else{
-			angle = (angle - 90) + 360;
-		}
-		*angle_f = angle*.0174533;
-		if (i>2)
-			break;
+	}
+	else{
+		*distance_f = -1;
+		*angle_f = -1;
 	}
 	//test
 	//Mat scaled, scaled_thresh;
