@@ -1,4 +1,0 @@
-Save Location:C:/Users/MadMinute/Desktop/Default Flight Folder/,Shared Folder Location://KYLE-HP/Users/Public/Downloads/,Delay:0,FPS:10,
-save locat: excel creates submit folder here and reads text files from here, 
-shared folder:copies file from this ti save location when excel is used
-both should be the same during actionable intel
