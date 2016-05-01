@@ -14,7 +14,7 @@ int highV = 200;
 int lowH_high = 170;
 int highH_high = 180;
 
-int detect_object(Mat scene){
+int detect_object(Mat scene, double *distance_f, double *angle_f){
 
 	Mat frame,HSV, img_thresholded;
 
@@ -45,9 +45,10 @@ int detect_object(Mat scene){
 	//detect circles
 	vector<Vec3f> circles;
 	HoughCircles(img_thresholded, circles, CV_HOUGH_GRADIENT,3, img_thresholded.rows / 2, 200, 100, 0, img_thresholded.rows);
-	
+	if (circles.size() < 1)
+		return -1;
 	//draw circles
-	for (size_t i = 0; i < circles.size(); i++)
+	for (size_t i = 0; i < 1; i++)//circles.size(); i++)
 	{
 		Point center(cvRound(circles[i][0]), cvRound(circles[i][1]));
 		cout << "x=" << cvRound(circles[i][0]) << "y=" << cvRound(circles[i][1]) << "r="<<cvRound(circles[i][2])<<endl;
@@ -65,7 +66,15 @@ int detect_object(Mat scene){
 		double pixel_length = (2 * distance*tan(camera_angle / 2)) / scene.cols;
 		double angle = atan2(distance, (opposite* pixel_length)) * 180 / 3.15;
 		cout << "Distance= " << distance << " Feet" << endl;
+		*distance_f = distance*.3048;
 		cout << "Angle= " << angle << "degrees" << endl;
+		if ((angle - 90) > 0){
+			angle -= 90;
+		}
+		else{
+			angle = (angle - 90) + 360;
+		}
+		*angle_f = angle*.0174533;
 		if (i>2)
 			break;
 	}

@@ -14,15 +14,57 @@ int main(){
 			unsigned int numCameras;
 
 			/*******Testing********/
-			/*bool loop = true;
+			struct sockaddr_in si_other;
+			int s, slen = sizeof(si_other);
+			char buf[BUFLEN];
+			char message[BUFLEN];
+			WSADATA wsa;
+
+			//Initialise winsock
+			if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+			{
+				printf("Failed. Error Code : %d", WSAGetLastError());
+				exit(EXIT_FAILURE);
+			}
+
+			//create socket
+			if ((s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
+			{
+				printf("socket() failed with error code : %d", WSAGetLastError());
+				exit(EXIT_FAILURE);
+			}
+
+			//setup address structure
+			memset((char *)&si_other, 0, sizeof(si_other));
+			si_other.sin_family = AF_INET;
+			si_other.sin_port = htons(PORT);
+			si_other.sin_addr.S_un.S_addr = inet_addr(SERVER);
+			bool loop = true;
 			VideoCapture capture;
 			capture.open(0);
 			while (loop){
+				double angle, distance;
 				capture.read(frame);
-				int quit=detect_object(frame);
+				int quit=detect_object(frame, &distance, &angle);
 				if (quit == 1)
 					loop = false;
+
+				char message[sizeof(angle) + sizeof(distance)];
+
+				memcpy(&message[0], &angle, sizeof(angle));
+				memcpy(&message[8], &distance, sizeof(distance));
+
+				//send the message
+				if (sendto(s, message, sizeof(message), 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
+				{
+					printf("sendto() failed with error code : %d", WSAGetLastError());
+					exit(EXIT_FAILURE);
+				}
+
+				//puts(buf);
 			}
+			closesocket(s);
+			WSACleanup();
 			return 0;
 			/*********************/
 
@@ -125,6 +167,7 @@ int RunCamera(PGRGuid guid)
 	int user_input=0;
 	Image rawImage;
 	bool loop = true;
+	double distance, angle;
 	// Connect to a camera
 	error = cam.Connect(&guid);
 	if (error != PGRERROR_OK)
@@ -160,6 +203,33 @@ int RunCamera(PGRGuid guid)
 
 	//Setting the frame size in OpenCV
 	frame = cvCreateImage(cvSize(rawImage.GetCols(), rawImage.GetRows()), IPL_DEPTH_8U, 3);	
+
+	//udp
+	struct sockaddr_in si_other;
+	int s, slen = sizeof(si_other);
+	char buf[BUFLEN];
+	char message[BUFLEN];
+	WSADATA wsa;
+
+	//Initialise winsock
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+	{
+		printf("Failed. Error Code : %d", WSAGetLastError());
+		exit(EXIT_FAILURE);
+	}
+
+	//create socket
+	if ((s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP)) == SOCKET_ERROR)
+	{
+		printf("socket() failed with error code : %d", WSAGetLastError());
+		exit(EXIT_FAILURE);
+	}
+
+	//setup address structure
+	memset((char *)&si_other, 0, sizeof(si_other));
+	si_other.sin_family = AF_INET;
+	si_other.sin_port = htons(PORT);
+	si_other.sin_addr.S_un.S_addr = inet_addr(SERVER);
 
 	while (loop)
 	{
@@ -205,7 +275,7 @@ int RunCamera(PGRGuid guid)
 		Mat scaled_frame;
 		double percent = .25;
 		resize(scene, scaled_frame, cvSize(scene.cols*percent, scene.rows*percent));
-		int quit = detect_object(scaled_frame);
+		int quit = detect_object(scaled_frame, &distance, &angle);
 		//end test
 		
 		//int quit = detect_object(scene);
@@ -213,11 +283,42 @@ int RunCamera(PGRGuid guid)
 		//RIP
 		if (quit == 1)
 			loop = false;
+
+		//udp
+		BYTE array_1[8];
+		BYTE array_2[8];
+		BYTE array[8];
+
+		for (int i = 0; i < sizeof(double); i++)
+		{
+			array_1[i] = ((BYTE*)&distance)[i];
+			array_2[i] = ((BYTE*)&angle)[i];
+		}
+
+		for (int i = 0; i < (sizeof(double) * 2); i++)
+		{
+			if (i < sizeof(double))
+				array[i] = array_1[i];
+
+			else
+				array[i] = array_2[i];
+		}
+
+		//send the message
+		if (sendto(s, message, strlen(message), 0, (struct sockaddr *) &si_other, slen) == SOCKET_ERROR)
+		{
+			printf("sendto() failed with error code : %d", WSAGetLastError());
+			exit(EXIT_FAILURE);
+		}
+
+		//puts(buf);
 	}
 
 	/* free memory */
 	cvDestroyWindow("Original");
 	cvReleaseImage(&frame);
+	closesocket(s);
+	WSACleanup();
 
 	cout << "Stopping capture" << endl;
 
